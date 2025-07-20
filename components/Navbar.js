@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -14,6 +14,7 @@ import {
 const Navbar = () => {
   const router = useRouter();
   const { isSignedIn } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleShortenClick = () => {
     if (isSignedIn) {
@@ -24,50 +25,83 @@ const Navbar = () => {
   };
 
   return (
-    <nav className='flex justify-between px-3 items-center text-white h-18 bg-purple-700'>
-      <div className=" font-bold text-lg flex justify-items-center items-center ">
-        <img className='w-14' src="/logo.png" alt="" />
-        <Link href="/">BitLinks</Link>
+    <nav className='bg-purple-700 text-white'>
+      <div className='flex items-center justify-between px-4 py-3 md:px-8'>
+        <div className='flex items-center space-x-2'>
+          <img className='w-10 h-10' src='/logo.png' alt='BitLinks logo' />
+          <Link href='/' className='text-xl font-bold'>BitLinks</Link>
+        </div>
+
+        <div className='md:hidden'>
+          <button
+            className='focus:outline-none'
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <svg className='w-6 h-6' fill='none' stroke='currentColor' strokeWidth='2' viewBox='0 0 24 24'>
+              {menuOpen ? (
+                <path strokeLinecap='round' strokeLinejoin='round' d='M6 18L18 6M6 6l12 12' />
+              ) : (
+                <path strokeLinecap='round' strokeLinejoin='round' d='M4 6h16M4 12h16M4 18h16' />
+              )}
+            </svg>
+          </button>
+        </div>
+
+        <ul className='hidden md:flex space-x-6 items-center'>
+          <Link href='/'><li>Home</li></Link>
+          <Link href='/about'><li>About</li></Link>
+          <li><button onClick={handleShortenClick}>Shorten</button></li>
+          <Link href='/generatedUrls'><li>Generated URLs</li></Link>
+          <Link href='/contact'><li>Contact</li></Link>
+
+          <li className='flex gap-2 items-center'>
+            <SignedIn>
+              <SignOutButton>
+                <button className='bg-purple-500 px-4 py-2 rounded-lg font-bold'>Sign Out</button>
+              </SignOutButton>
+              <UserButton afterSignOutUrl='/' />
+            </SignedIn>
+
+            <SignedOut>
+              <SignInButton>
+                <button className='bg-purple-500 px-4 py-2 rounded-lg font-bold'>Sign In</button>
+              </SignInButton>
+              <Link href='/github'>
+                <button className='bg-purple-500 px-4 py-2 rounded-lg font-bold'>GitHub</button>
+              </Link>
+            </SignedOut>
+          </li>
+        </ul>
       </div>
 
-      <ul className='flex justify-center gap-6 items-center'>
-        <Link href="/"><li>Home</li></Link>
-        <Link href="/about"><li>About</li></Link>
-        <li>
-          <button onClick={handleShortenClick}>Shorten</button>
-        </li>
-          
-          <Link href="/generatedUrls"><li>GeneratedUrls</li></Link>
-          
-        <Link href="/contact"><li>Contact</li></Link>
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className='md:hidden px-4 pb-4'>
+          <ul className='space-y-3'>
+            <Link href='/'><li>Home</li></Link>
+            <Link href='/about'><li>About</li></Link>
+            <li><button onClick={handleShortenClick}>Shorten</button></li>
+            <Link href='/generatedUrls'><li>Generated URLs</li></Link>
+            <Link href='/contact'><li>Contact</li></Link>
 
-        <li className=' flex gap-3 items-center'>
-          <SignedIn>
-            <SignOutButton>
-              <button className="bg-purple-500 shadow-lg p-3 rounded-lg font-bold py-1 ">
-                Sign Out
-              </button>
-            </SignOutButton>
+            <SignedIn>
+              <SignOutButton>
+                <button className='bg-purple-500 w-full py-2 rounded-lg font-bold'>Sign Out</button>
+              </SignOutButton>
+              <UserButton afterSignOutUrl='/' />
+            </SignedIn>
 
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
-
-          <SignedOut>
-            <SignInButton>
-              <button className="bg-purple-500 shadow-lg p-3 rounded-lg font-bold py-1">
-                Sign In
-              </button>
-            </SignInButton>
-
-            {/* Show GitHub button only when signed out */}
-            <Link href="/github">
-              <button className='bg-purple-500 shadow-lg p-3 rounded-lg font-bold py-1'>
-                GitHub
-              </button>
-            </Link>
-          </SignedOut>
-        </li>
-      </ul>
+            <SignedOut>
+              <SignInButton>
+                <button className='bg-purple-500 w-full py-2 rounded-lg font-bold'>Sign In</button>
+              </SignInButton>
+              <Link href='/github'>
+                <button className='bg-purple-500 w-full py-2 rounded-lg font-bold'>GitHub</button>
+              </Link>
+            </SignedOut>
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };
